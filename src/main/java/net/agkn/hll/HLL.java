@@ -838,7 +838,7 @@ public class HLL {
     // Serialization
     /**
      * Serializes the HLL to an array of bytes in correspondence with the format
-     * of the default schema version, {@link SerializationUtil#OUTPUT_SCHEMA_VERSION}.
+     * of the default schema version, {@link SerializationUtil#DEFAULT_SCHEMA_VERSION}.
      *
      * @return the array of bytes representing the HLL. This will never be
      *         <code>null</code> or empty.
