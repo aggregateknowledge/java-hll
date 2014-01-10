@@ -60,6 +60,22 @@ import net.agkn.hll.util.NumberUtil;
  * @author timon
  */
 public class HLL {
+    // minimum and maximum values for the log-base-2 of the number of registers
+    // in the HLL
+    private static final int MINIMUM_LOG2M_PARAM = 4;
+    private static final int MAXIMUM_LOG2M_PARAM = 30;
+
+    // minimum and maximum values for the register width of the HLL
+    private static final int MINIMUM_REGWIDTH_PARAM = 1;
+    private static final int MAXIMUM_REGWIDTH_PARAM = 8;
+
+    // minimum and maximum values for the 'expthresh' parameter of the
+    // constructor that is meant to match the PostgreSQL implementation's
+    // constructor and parameter names
+    private static final int MINIMUM_EXPTHRESH_PARAM = -1;
+    private static final int MAXIMUM_EXPTHRESH_PARAM = 18;
+    private static final int MAXIMUM_EXPLICIT_THRESHOLD = (1 << (MAXIMUM_EXPTHRESH_PARAM - 1)/*per storage spec*/);
+
     // ************************************************************************
     // Storage
     // storage used when #type is EXPLICIT, null otherwise
@@ -131,7 +147,7 @@ public class HLL {
      *       <a href="https://github.com/aggregateknowledge/postgresql-hll/blob/master/README.markdown#explanation-of-parameters-and-tuning">here</a>.
      *
      * @param log2m log-base-2 of the number of registers used in the HyperLogLog
-     *        algorithm. Must be at least 4 and at most 31.
+     *        algorithm. Must be at least 4 and at most 30.
      * @param regwidth number of bits used per register in the HyperLogLog
      *        algorithm. Must be at least 1 and at most 8.
      * @param expthresh tunes when the {@link HLLType#EXPLICIT} to
@@ -161,7 +177,14 @@ public class HLL {
      */
     public HLL(final int log2m, final int regwidth, final int expthresh, final boolean sparseon, final HLLType type) {
         this.log2m = log2m;
+        if((log2m < MINIMUM_LOG2M_PARAM) || (log2m > MAXIMUM_LOG2M_PARAM)) {
+            throw new IllegalArgumentException("'log2m' must be at least " + MINIMUM_LOG2M_PARAM + " and at most " + MAXIMUM_LOG2M_PARAM + " (was: " + log2m + ")");
+        }
+
         this.regwidth = regwidth;
+        if((regwidth < MINIMUM_REGWIDTH_PARAM) || (regwidth > MAXIMUM_REGWIDTH_PARAM)) {
+            throw new IllegalArgumentException("'regwidth' must be at least " + MINIMUM_REGWIDTH_PARAM + " and at most " + MAXIMUM_REGWIDTH_PARAM + " (was: " + regwidth + ")");
+        }
 
         this.m = (1 << log2m);
         this.mBitsMask = m - 1;
@@ -174,20 +197,28 @@ public class HLL {
             this.explicitAuto = true;
             this.explicitOff = false;
 
-            final int fullRepresentationSize = (this.regwidth * this.m + 7/*round up to next whole byte*/)/Byte.SIZE;
-            // NOTE:  This math matches the size cutoffs in the PostgreSQL impl.
-            this.explicitThreshold = fullRepresentationSize / 8/*integer division to round down*/;
-        } else if (expthresh == 0) {
+            // NOTE:  This math matches the size calculation in the PostgreSQL impl.
+            final long fullRepresentationSize = (this.regwidth * (long)this.m + 7/*round up to next whole byte*/)/Byte.SIZE;
+            final int numLongs = (int)(fullRepresentationSize / 8/*integer division to round down*/);
+
+            if(numLongs > MAXIMUM_EXPLICIT_THRESHOLD) {
+                this.explicitThreshold = MAXIMUM_EXPLICIT_THRESHOLD;
+            } else {
+                this.explicitThreshold = numLongs;
+            }
+        } else if(expthresh == 0) {
             this.explicitAuto = false;
             this.explicitOff = true;
             this.explicitThreshold = 0;
-        } else {
+        } else if((expthresh > 0) && (expthresh <= MAXIMUM_EXPTHRESH_PARAM)){
             this.explicitAuto = false;
             this.explicitOff = false;
             this.explicitThreshold = (1 << (expthresh - 1));
+        } else {
+            throw new IllegalArgumentException("'expthresh' must be at least " + MINIMUM_EXPTHRESH_PARAM + " and at most " + MAXIMUM_EXPTHRESH_PARAM + " (was: " + expthresh + ")");
         }
 
-        this.shortWordLength = regwidth + log2m;
+        this.shortWordLength = (regwidth + log2m);
         this.sparseOff = !sparseon;
         if(this.sparseOff) {
             this.sparseThreshold = 0;
@@ -207,12 +238,12 @@ public class HLL {
      * and {@link HLLType#SPARSE} representations should be enabled.
      *
      * @param log2m log-base-2 of the number of registers used in the HyperLogLog
-     *        algorithm. Must be at least 4 and at most 31.
+     *        algorithm. Must be at least 4 and at most 30.
      * @param regwidth number of bits used per register in the HyperLogLog
      *        algorithm. Must be at least 1 and at most 8.
      * @param explicitThreshold cardinality threshold at which the {@link HLLType#EXPLICIT}
      *        representation should be promoted to {@link HLLType#SPARSE}.
-     *        This must be a power of two.
+     *        This must be greater than zero and less than or equal to {@value #MAXIMUM_EXPLICIT_THRESHOLD}.
      * @param sparseThreshold register count threshold at which the {@link HLLType#SPARSE}
      *        representation should be promoted to {@link HLLType#FULL}.
      *        This must be greater than zero.
@@ -221,7 +252,14 @@ public class HLL {
      */
     /*package, for testing*/ HLL(final int log2m, final int regwidth, final int explicitThreshold, final int sparseThreshold, final HLLType type) {
         this.log2m = log2m;
+        if((log2m < MINIMUM_LOG2M_PARAM) || (log2m > MAXIMUM_LOG2M_PARAM)) {
+            throw new IllegalArgumentException("'log2m' must be at least " + MINIMUM_LOG2M_PARAM + " and at most " + MAXIMUM_LOG2M_PARAM + " (was: " + log2m + ")");
+        }
+
         this.regwidth = regwidth;
+        if((regwidth < MINIMUM_REGWIDTH_PARAM) || (regwidth > MAXIMUM_REGWIDTH_PARAM)) {
+            throw new IllegalArgumentException("'regwidth' must be at least " + MINIMUM_REGWIDTH_PARAM + " and at most " + MAXIMUM_REGWIDTH_PARAM + " (was: " + regwidth + ")");
+        }
 
         this.m = (1 << log2m);
         this.mBitsMask = m - 1;
@@ -233,8 +271,11 @@ public class HLL {
         this.explicitAuto = false;
         this.explicitOff = false;
         this.explicitThreshold = explicitThreshold;
+        if((explicitThreshold < 1) || (explicitThreshold > MAXIMUM_EXPLICIT_THRESHOLD)) {
+            throw new IllegalArgumentException("'explicitThreshold' must be at least 1 and at most " + MAXIMUM_EXPLICIT_THRESHOLD + " (was: " + explicitThreshold + ")");
+        }
 
-        this.shortWordLength = regwidth + log2m;
+        this.shortWordLength = (regwidth + log2m);
         this.sparseOff = false;
         this.sparseThreshold = sparseThreshold;
 

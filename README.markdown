@@ -6,6 +6,8 @@ A Java implementation of [HyperLogLog](http://algo.inria.fr/flajolet/Publication
 
 **NOTE:** This implementation fully implements reading and writing all formats in the [v1.0.0 storage specification](https://github.com/aggregateknowledge/hll-storage-spec/blob/v1.0.0/STORAGE.md), but internal memory representation (and hence space-tradeoffs) may cause automatic "promotion" between representations to occur at different implementation-dependent points. To ensure interoperability between, for example, the [PostgreSQL implementation](https://github.com/aggregateknowledge/postgresql-hll) and this library, all promotion cutoffs should be explicitly defined.
 
+Similarly, certain parameters have different bounds in order to deal with VM limitations like maximum array length. Specifically, `log2m` has a maximum value of 30 in this implementation whereas the storage specification states a maximum value of 31 (which can be realized in the PostgreSQL implementation).
+
 Overview
 --------
 
