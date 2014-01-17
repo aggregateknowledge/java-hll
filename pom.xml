@@ -5,9 +5,29 @@
     <groupId>net.agkn</groupId>
     <artifactId>hll</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.0</version>
-
+    <description>HyperLogLog: approximate distinct value counting algoritm</description>
+    <url>https://github.com/aggregateknowledge/java-hll</url>
+    <version>1.2.0</version>
     <name>HyperLogLog in Java</name>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:aggregateknowledge/java-hll.git</connection>
+        <url>scm:git:git@github.com:aggregateknowledge/java-hll.git</url>
+        <developerConnection>scm:git:git@github.com:aggregateknowledge/java-hll.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <id>timonk</id>
+            <name>Timon Karnezos</name>
+            <email>timon.karnezos@neustar.biz</email>
+        </developer>
+    </developers>
 
     <!-- ================================================================== -->
     <build>
@@ -24,6 +44,34 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- .......................................................... -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -34,6 +82,53 @@
 
         </plugins>
     </build>
+
+    <profiles>
+      <profile>
+        <id>release-sign-artifacts</id>
+        <activation>
+          <property>
+            <name>performRelease</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-gpg-plugin</artifactId>
+              <version>1.4</version>
+              <executions>
+                <execution>
+                  <id>sign-artifacts</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>sign</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
     <!-- ================================================================== -->
     <!-- NOTE:  all version numbers are defined in the properties section -->
@@ -85,16 +180,4 @@
         <testng-version>5.7</testng-version>
         <fastutil-version>6.5.11</fastutil-version>
     </properties>
-
-    <!-- ================================================================== -->
-    <!-- Custom repositories settings -->
-    <repositories>
-        <repository>
-            <id>repository.jboss.org</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
