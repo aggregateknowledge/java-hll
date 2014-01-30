@@ -62,19 +62,19 @@ import net.agkn.hll.util.NumberUtil;
 public class HLL {
     // minimum and maximum values for the log-base-2 of the number of registers
     // in the HLL
-    private static final int MINIMUM_LOG2M_PARAM = 4;
-    private static final int MAXIMUM_LOG2M_PARAM = 30;
+    public static final int MINIMUM_LOG2M_PARAM = 4;
+    public static final int MAXIMUM_LOG2M_PARAM = 30;
 
     // minimum and maximum values for the register width of the HLL
-    private static final int MINIMUM_REGWIDTH_PARAM = 1;
-    private static final int MAXIMUM_REGWIDTH_PARAM = 8;
+    public static final int MINIMUM_REGWIDTH_PARAM = 1;
+    public static final int MAXIMUM_REGWIDTH_PARAM = 8;
 
     // minimum and maximum values for the 'expthresh' parameter of the
     // constructor that is meant to match the PostgreSQL implementation's
     // constructor and parameter names
-    private static final int MINIMUM_EXPTHRESH_PARAM = -1;
-    private static final int MAXIMUM_EXPTHRESH_PARAM = 18;
-    private static final int MAXIMUM_EXPLICIT_THRESHOLD = (1 << (MAXIMUM_EXPTHRESH_PARAM - 1)/*per storage spec*/);
+    public static final int MINIMUM_EXPTHRESH_PARAM = -1;
+    public static final int MAXIMUM_EXPTHRESH_PARAM = 18;
+    public static final int MAXIMUM_EXPLICIT_THRESHOLD = (1 << (MAXIMUM_EXPTHRESH_PARAM - 1)/*per storage spec*/);
 
     // ************************************************************************
     // Storage
@@ -959,7 +959,7 @@ public class HLL {
                 schemaVersion.getDeserializer(type, wordLength, bytes);
         switch(type) {
             case EXPLICIT:
-                // NOTE:  This should not exceed expthread and this will always
+                // NOTE:  This should not exceed expthresh and this will always
                 //        be exactly the number of words that were encoded,
                 //        because the word length is at least a byte wide.
                 // SEE:   IWordDeserializer#totalWordCount()
@@ -972,11 +972,15 @@ public class HLL {
                 //        (1 byte) there would be a possibility (because of
                 //        padding arithmetic) of having one or more extra
                 //        registers read. However, this is not relevant as the
-                //        extra register would be all zeroes, which does not
-                //        affect the data structure.
+                //        extra registers will be all zeroes, which are ignored
+                //        in the sparse representation.
                 for(int i=0; i<deserializer.totalWordCount(); i++) {
                     final long shortWord = deserializer.readWord();
-                    hll.sparseProbabilisticStorage.put((int)(shortWord >>> hll.regwidth), (byte)(shortWord & hll.valueMask));
+                    final byte registerValue = (byte)(shortWord & hll.valueMask);
+                    // Only set non-zero registers.
+                    if (registerValue != 0) {
+                        hll.sparseProbabilisticStorage.put((int)(shortWord >>> hll.regwidth), registerValue);
+                    }
                 }
                 break;
             case FULL:

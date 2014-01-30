@@ -37,7 +37,7 @@ public class BigEndianAscendingWordSerializerTest {
     public void constructorErrorTest() {
         // word length too small
         try {
-            new BigEndianAscendingWordSerializer(4/*wordLength, below minimum of 5*/, 1/*wordCount, arbitrary*/, 0/*bytePadding, arbitrary*/);
+            new BigEndianAscendingWordSerializer(0/*wordLength, below minimum of 1*/, 1/*wordCount, arbitrary*/, 0/*bytePadding, arbitrary*/);
             fail("Should complain about too-short words.");
         } catch(final IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Word length must be"));
@@ -85,7 +85,6 @@ public class BigEndianAscendingWordSerializerTest {
         } catch(final RuntimeException e) {
             assertTrue(e.getMessage().contains("Not all words"));
         }
-
     }
 
     /**
@@ -169,7 +168,7 @@ public class BigEndianAscendingWordSerializerTest {
             // -----------
             // 9     |31    |1     |padding
 
-            // Corrsponding bits:
+            // Corresponding bits:
             // ------------------
             // 0100 1|111 11|00 001|0
 
@@ -193,7 +192,7 @@ public class BigEndianAscendingWordSerializerTest {
             }
 
             // Values: 1-8
-            // Corrsponding bits:
+            // Corresponding bits:
             // ------------------
             // 00001
             // 00010
@@ -236,7 +235,7 @@ public class BigEndianAscendingWordSerializerTest {
      */
     @Test
     public void smokeTestSparseParams() {
-        // XXX: revist
+        // XXX: revisit
         final int shortWordLength = 17;
         {// Should work on an empty sequence, with no padding.
             final BigEndianAscendingWordSerializer serializer =
@@ -260,7 +259,7 @@ public class BigEndianAscendingWordSerializerTest {
             // -----------
             // 9                    |42                   |75                   |padding
 
-            // Corrsponding bits:
+            // Corresponding bits:
             // ------------------
             // 0000 0000 0000 0100 1|000 0000 0000 1010 10|00 0000 0000 1001 011|0 0000
 
@@ -289,7 +288,7 @@ public class BigEndianAscendingWordSerializerTest {
             }
 
             // Values: 1-8
-            // Corrsponding bits:
+            // Corresponding bits:
             // ------------------
             // 0000 0000 0000 0000 1
             // 000 0000 0000 0000 10

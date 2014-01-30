@@ -135,6 +135,7 @@ public class BitVector {
             final long registerMask = BitVector.this.registerMask;
 
             // register setup
+            long registerIndex = 0;
             int wordIndex = 0;
             int remainingWordBits = BITS_PER_WORD;
             long word = words[wordIndex];
@@ -156,14 +157,12 @@ public class BitVector {
                     word = words[wordIndex] >>> (registerWidth - remainingWordBits);
                     remainingWordBits += BITS_PER_WORD - registerWidth;
                 }
+                registerIndex++;
                 return register;
             }
 
             @Override public boolean hasNext() {
-                // check if there's room in the current word.  If so then there
-                // is a next.  If not then see if there are more words.
-                if(remainingWordBits >= registerWidth) return true;
-                return ((wordIndex + 1) < words.length);
+                return registerIndex < count;
             }
         };
     }

@@ -47,19 +47,19 @@ public class BigEndianAscendingWordDeserializer implements IWordDeserializer {
     // ========================================================================
     /**
      * @param wordLength the length in bits of the words to be deserialized. Must
-     *        be less than or equal to 64 and greater than or equal to 5.
+     *        be less than or equal to 64 and greater than or equal to 1.
      * @param bytePadding the number of leading bytes that pad the serialized words.
      *        Must be greater than or equal to zero.
      * @param bytes the byte array containing the serialized words. Cannot be
      *        <code>null</code>.
      */
     public BigEndianAscendingWordDeserializer(final int wordLength, final int bytePadding, final byte[] bytes) {
-        if((wordLength < 5) || (wordLength > 64)) {
-            throw new IllegalArgumentException("Word length must be larger than 4 and less than or equal to 64. (was: " + wordLength + ")");
+        if((wordLength < 1) || (wordLength > 64)) {
+            throw new IllegalArgumentException("Word length must be >= 1 and <= 64. (was: " + wordLength + ")");
         }
 
         if(bytePadding < 0) {
-            throw new IllegalArgumentException("Byte padding must be greater than or equal to zero. (was: " + bytePadding + ")");
+            throw new IllegalArgumentException("Byte padding must be >= zero. (was: " + bytePadding + ")");
         }
 
         this.wordLength = wordLength;

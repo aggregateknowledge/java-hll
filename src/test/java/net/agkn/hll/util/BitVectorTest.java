@@ -17,6 +17,8 @@ package net.agkn.hll.util;
  */
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
@@ -95,6 +97,32 @@ public class BitVectorTest {
             assertEquals(registerIterator3.hasNext(), false/*no more*/);
             assertEquals(registerIterator4.hasNext(), false/*no more*/);
         }
+
+        { // scoped locally for sanity
+            // Vectors that are shorter than one word
+            assertIterator(1, 12/* 1*12=12 bits, fewer than a single word */);
+            assertIterator(2, 12/* 2*12=24 bits, fewer than a single word */);
+            assertIterator(3, 12/* 3*12=36 bits, fewer than a single word */);
+            assertIterator(4, 12/* 4*12=48 bits, fewer than a single word */);
+
+            // Vectors that don't fit exactly into longs
+            assertIterator(5, 16/* 5*16=80 bits */);
+            assertIterator(5, 32/* 5*32=160 bits */);
+        }
+
+        // Iterate over vectors that are padded
+    }
+
+    private static void assertIterator(final int width, final int count) {
+        final BitVector vector = new BitVector(width, count);
+        final LongIterator iter = vector.registerIterator();
+
+        for(int i=0; i<count; i++) {
+            assertTrue(iter.hasNext(), String.format("expected more elements: width=%s, count=%s", width, count));
+            // TODO: fill with a sentinel value
+            assertEquals(iter.next(), 0);
+        }
+        assertFalse(iter.hasNext(), String.format("expected no more elements: width=%s, count=%s", width, count));
     }
 
     // ========================================================================
