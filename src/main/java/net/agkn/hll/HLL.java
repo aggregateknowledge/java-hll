@@ -234,6 +234,23 @@ public class HLL {
     }
 
     /**
+     *  Construct an empty HLL with the given {@code log2m} and {@code regwidth}.<p/>
+     *
+     *  This is equivalent to calling <code>HLL(log2m, regwidth, -1, true, HLLType.EMPTY)</code>.
+     *
+     * @param log2m log-base-2 of the number of registers used in the HyperLogLog
+     *        algorithm. Must be at least 4 and at most 30.
+     * @param regwidth number of bits used per register in the HyperLogLog
+     *        algorithm. Must be at least 1 and at most 8.
+     *
+     * @see #HLL(int, int, int, boolean, HLLType)
+     */
+    public HLL(final int log2m, final int regwidth) {
+        this(log2m, regwidth, -1, true, HLLType.EMPTY);
+    }
+
+    // -------------------------------------------------------------------------
+    /**
      * Convenience constructor for testing. Assumes that both {@link HLLType#EXPLICIT}
      * and {@link HLLType#SPARSE} representations should be enabled.
      *
