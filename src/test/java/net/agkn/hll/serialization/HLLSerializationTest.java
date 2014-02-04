@@ -18,6 +18,7 @@ import static net.agkn.hll.HLL.MINIMUM_EXPTHRESH_PARAM;
 import static net.agkn.hll.HLL.MINIMUM_LOG2M_PARAM;
 import static net.agkn.hll.HLL.MINIMUM_REGWIDTH_PARAM;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 /**
  * Serialization smoke-tests.
@@ -34,7 +35,7 @@ public class HLLSerializationTest {
      * under all possible parameters.
      */
     @Test
-    public void serializationSmokeTest() {
+    public void serializationSmokeTest() throws Exception {
         final Random random = new Random(RANDOM_SEED);
         final int randomCount = 250;
         final List<Long> randoms = new ArrayList<Long>(randomCount){{
@@ -55,7 +56,8 @@ public class HLLSerializationTest {
     //       related edge cases that appear as log2m gets even larger.
     // NOTE: This test completed successfully with log2m<=MAXIMUM_LOG2M_PARAM
     //       on 2014-01-30.
-    private static void assertCardinality(final HLLType hllType, final Collection<Long> items) {
+    private static void assertCardinality(final HLLType hllType, final Collection<Long> items)
+           throws CloneNotSupportedException {
         for(int log2m=MINIMUM_LOG2M_PARAM; log2m<=16; log2m++) {
             for(int regw=MINIMUM_REGWIDTH_PARAM; regw<=MAXIMUM_REGWIDTH_PARAM; regw++) {
                 for(int expthr=MINIMUM_EXPTHRESH_PARAM; expthr<=MAXIMUM_EXPTHRESH_PARAM; expthr++ ) {
@@ -66,6 +68,9 @@ public class HLLSerializationTest {
                         }
                         HLL copy = HLL.fromBytes(hll.toBytes());
                         assertEquals(copy.cardinality(), hll.cardinality());
+
+                        HLL clone = hll.clone();
+                        assertEquals(clone.cardinality(), hll.cardinality());
                     }
                 }
             }
