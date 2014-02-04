@@ -25,7 +25,7 @@ import net.agkn.hll.serialization.IWordSerializer;
  *
  * @author rgrzywinski
  */
-public class BitVector {
+public class BitVector implements Cloneable {
     // NOTE:  in this context, a word is 64bits
 
     // rather than doing division to determine how a bit index fits into 64bit
