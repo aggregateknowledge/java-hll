@@ -74,6 +74,7 @@ public class HLL {
     // constructor and parameter names
     public static final int MINIMUM_EXPTHRESH_PARAM = -1;
     public static final int MAXIMUM_EXPTHRESH_PARAM = 18;
+    public static final int MINIMUM_EXPLICIT_THRESHOLD = 0;
     public static final int MAXIMUM_EXPLICIT_THRESHOLD = (1 << (MAXIMUM_EXPTHRESH_PARAM - 1)/*per storage spec*/);
 
     // ************************************************************************
@@ -288,8 +289,8 @@ public class HLL {
         this.explicitAuto = false;
         this.explicitOff = false;
         this.explicitThreshold = explicitThreshold;
-        if((explicitThreshold < 1) || (explicitThreshold > MAXIMUM_EXPLICIT_THRESHOLD)) {
-            throw new IllegalArgumentException("'explicitThreshold' must be at least 1 and at most " + MAXIMUM_EXPLICIT_THRESHOLD + " (was: " + explicitThreshold + ")");
+        if((explicitThreshold < MINIMUM_EXPLICIT_THRESHOLD) || (explicitThreshold > MAXIMUM_EXPLICIT_THRESHOLD)) {
+            throw new IllegalArgumentException("'explicitThreshold' must be at least " + MINIMUM_EXPLICIT_THRESHOLD + "  and at most " + MAXIMUM_EXPLICIT_THRESHOLD + " (was: " + explicitThreshold + ")");
         }
 
         this.shortWordLength = (regwidth + log2m);
