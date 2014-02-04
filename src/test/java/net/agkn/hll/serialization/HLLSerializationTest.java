@@ -55,7 +55,7 @@ public class HLLSerializationTest {
     //       related edge cases that appear as log2m gets even larger.
     // NOTE: This test completed successfully with log2m<=MAXIMUM_LOG2M_PARAM
     //       on 2014-01-30.
-    private static void assertCardinality(final HLLType hllType, final Collection<Long> items) {
+    private void assertCardinality(final HLLType hllType, final Collection<Long> items) {
         for(int log2m=MINIMUM_LOG2M_PARAM; log2m<=16; log2m++) {
             for(int regw=MINIMUM_REGWIDTH_PARAM; regw<=MAXIMUM_REGWIDTH_PARAM; regw++) {
                 for(int expthr=MINIMUM_EXPTHRESH_PARAM; expthr<=MAXIMUM_EXPTHRESH_PARAM; expthr++ ) {
@@ -66,6 +66,14 @@ public class HLLSerializationTest {
                         }
                         HLL copy = HLL.fromBytes(hll.toBytes());
                         assertEquals(copy.cardinality(), hll.cardinality());
+
+                        try {
+                            HLL clone = hll.clone();
+                            assertEquals(clone.cardinality(), hll.cardinality());
+                        } catch (Exception e) {
+                            Assert.fail("Exception catched in clone attempt " + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
