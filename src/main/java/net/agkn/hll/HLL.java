@@ -59,7 +59,7 @@ import net.agkn.hll.util.NumberUtil;
  *
  * @author timon
  */
-public class HLL {
+public class HLL implements Cloneable {
     // minimum and maximum values for the log-base-2 of the number of registers
     // in the HLL
     public static final int MINIMUM_LOG2M_PARAM = 4;
@@ -1017,5 +1017,29 @@ public class HLL {
         }
 
         return hll;
+    }
+
+    @Override
+    public HLL clone() throws CloneNotSupportedException {
+        HLL copy = new HLL(log2m, regwidth, explicitThreshold, sparseThreshold, type);
+
+        switch(type) {
+            case EMPTY:
+                // nothing to be done
+                break;
+            case EXPLICIT:
+                copy.explicitStorage = this.explicitStorage.clone();
+                break;
+            case SPARSE:
+                copy.sparseProbabilisticStorage = this.sparseProbabilisticStorage.clone();
+                break;
+            case FULL:
+                copy.probabilisticStorage = this.probabilisticStorage.clone();
+                break;
+            default:
+                throw new RuntimeException("Unsupported HLL type " + type);
+        }
+
+        return copy;
     }
 }
