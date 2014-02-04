@@ -1,3 +1,7 @@
+v1.4.0 - Feb 04, 2014
+---------------------
+* Fixed #4: lowered JDK requirement to 1.6 from 1.7.
+
 v1.3.0 - Jan 31, 2014
 ---------------------
 * Fixed #3: added new, simple HLL constructor.
