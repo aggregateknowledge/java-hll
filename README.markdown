@@ -83,6 +83,17 @@ For more information on HLL intersections, see [this blog post](http://blog.aggr
 Usage
 =====
 
+HLL is available in Maven Central. Include it in your project with:
+
+```xml
+<dependency>
+    <groupId>net.agkn</groupId>
+    <artifactId>hll</artifactId>
+    <version>1.4.0</version>
+</dependency>
+```
+
+
 Hashing and adding a value to a new HLL:
 
 ```java
