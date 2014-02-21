@@ -1029,6 +1029,7 @@ public class HLL implements Cloneable {
         //       sparse are enabled, the easiest thing to do here is to re-derive
         //       the expthresh parameter and create a new HLL with the public
         //       constructor.
+        // TODO: add a more sensible constructor to make this less obfuscated
         final int copyExpthresh;
         if(explicitAuto) {
             copyExpthresh = -1;
