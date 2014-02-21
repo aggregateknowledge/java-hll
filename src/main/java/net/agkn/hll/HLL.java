@@ -59,7 +59,7 @@ import net.agkn.hll.util.NumberUtil;
  *
  * @author timon
  */
-public class HLL {
+public class HLL implements Cloneable {
     // minimum and maximum values for the log-base-2 of the number of registers
     // in the HLL
     public static final int MINIMUM_LOG2M_PARAM = 4;
@@ -1016,5 +1016,50 @@ public class HLL {
         }
 
         return hll;
+    }
+
+    /**
+     * Create a deep copy of this HLL.
+     *
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public HLL clone() throws CloneNotSupportedException {
+        // NOTE: Since the package-only constructor assumes both explicit and
+        //       sparse are enabled, the easiest thing to do here is to re-derive
+        //       the expthresh parameter and create a new HLL with the public
+        //       constructor.
+        final int copyExpthresh;
+        if(explicitAuto) {
+            copyExpthresh = -1;
+        } else if(explicitOff) {
+            copyExpthresh = 0;
+        } else {
+            // explicitThreshold is defined as:
+            //
+            //      this.explicitThreshold = (1 << (expthresh - 1));
+            //
+            // Since explicitThreshold is a power of two and only has a single
+            // bit set, finding the LSB is the same as finding the inverse
+            copyExpthresh = BitUtil.leastSignificantBit(explicitThreshold);
+        }
+        final HLL copy = new HLL(log2m, regwidth, copyExpthresh, !sparseOff/*sparseOn*/, type);
+        switch(type) {
+            case EMPTY:
+                // nothing to be done
+                break;
+            case EXPLICIT:
+                copy.explicitStorage = this.explicitStorage.clone();
+                break;
+            case SPARSE:
+                copy.sparseProbabilisticStorage = this.sparseProbabilisticStorage.clone();
+                break;
+            case FULL:
+                copy.probabilisticStorage = this.probabilisticStorage.clone();
+                break;
+            default:
+                throw new RuntimeException("Unsupported HLL type " + type);
+        }
+        return copy;
     }
 }
