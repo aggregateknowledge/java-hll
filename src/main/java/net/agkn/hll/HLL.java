@@ -59,7 +59,7 @@ import net.agkn.hll.util.NumberUtil;
  *
  * @author timon
  */
-public class HLL {
+public class HLL implements Cloneable {
     // minimum and maximum values for the log-base-2 of the number of registers
     // in the HLL
     public static final int MINIMUM_LOG2M_PARAM = 4;
@@ -74,6 +74,7 @@ public class HLL {
     // constructor and parameter names
     public static final int MINIMUM_EXPTHRESH_PARAM = -1;
     public static final int MAXIMUM_EXPTHRESH_PARAM = 18;
+    public static final int MINIMUM_EXPLICIT_THRESHOLD = 0;
     public static final int MAXIMUM_EXPLICIT_THRESHOLD = (1 << (MAXIMUM_EXPTHRESH_PARAM - 1)/*per storage spec*/);
 
     // ************************************************************************
@@ -288,8 +289,8 @@ public class HLL {
         this.explicitAuto = false;
         this.explicitOff = false;
         this.explicitThreshold = explicitThreshold;
-        if((explicitThreshold < 1) || (explicitThreshold > MAXIMUM_EXPLICIT_THRESHOLD)) {
-            throw new IllegalArgumentException("'explicitThreshold' must be at least 1 and at most " + MAXIMUM_EXPLICIT_THRESHOLD + " (was: " + explicitThreshold + ")");
+        if((explicitThreshold < MINIMUM_EXPLICIT_THRESHOLD) || (explicitThreshold > MAXIMUM_EXPLICIT_THRESHOLD)) {
+            throw new IllegalArgumentException("'explicitThreshold' must be at least " + MINIMUM_EXPLICIT_THRESHOLD + "  and at most " + MAXIMUM_EXPLICIT_THRESHOLD + " (was: " + explicitThreshold + ")");
         }
 
         this.shortWordLength = (regwidth + log2m);
@@ -1016,5 +1017,29 @@ public class HLL {
         }
 
         return hll;
+    }
+
+    @Override
+    public HLL clone() throws CloneNotSupportedException {
+        HLL copy = new HLL(log2m, regwidth, explicitThreshold, sparseThreshold, type);
+
+        switch(type) {
+            case EMPTY:
+                // nothing to be done
+                break;
+            case EXPLICIT:
+                copy.explicitStorage = this.explicitStorage.clone();
+                break;
+            case SPARSE:
+                copy.sparseProbabilisticStorage = this.sparseProbabilisticStorage.clone();
+                break;
+            case FULL:
+                copy.probabilisticStorage = this.probabilisticStorage.clone();
+                break;
+            default:
+                throw new RuntimeException("Unsupported HLL type " + type);
+        }
+
+        return copy;
     }
 }
