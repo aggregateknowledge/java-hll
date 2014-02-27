@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <description>HyperLogLog: approximate distinct value counting algoritm</description>
     <url>https://github.com/aggregateknowledge/java-hll</url>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <name>HyperLogLog in Java</name>
     <licenses>
         <license>

@@ -947,11 +947,21 @@ public class HLL implements Cloneable {
         final HLLType type = metadata.HLLType();
         final int regwidth = metadata.registerWidth();
         final int log2m = metadata.registerCountLog2();
-        final int expthresh = metadata.log2ExplicitCutoff();
         final boolean sparseon = metadata.sparseEnabled();
 
+        final int expthresh;
+        if(metadata.explicitAuto()) {
+            expthresh = -1;
+        } else if(metadata.explicitOff()) {
+            expthresh = 0;
+        } else {
+            // NOTE: take into account that the postgres-compatible constructor
+            //       subtracts one before taking a power of two.
+            expthresh = metadata.log2ExplicitCutoff() + 1;
+        }
 
         final HLL hll = new HLL(log2m, regwidth, expthresh, sparseon, type);
+
         // Short-circuit on empty, which needs no other deserialization.
         if(HLLType.EMPTY.equals(type)) {
             return hll;
@@ -1042,7 +1052,7 @@ public class HLL implements Cloneable {
             //
             // Since explicitThreshold is a power of two and only has a single
             // bit set, finding the LSB is the same as finding the inverse
-            copyExpthresh = BitUtil.leastSignificantBit(explicitThreshold);
+            copyExpthresh = BitUtil.leastSignificantBit(explicitThreshold) + 1;
         }
         final HLL copy = new HLL(log2m, regwidth, copyExpthresh, !sparseOff/*sparseOn*/, type);
         switch(type) {
