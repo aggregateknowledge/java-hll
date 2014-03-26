@@ -139,6 +139,9 @@ public class HLL {
     // the cutoff value of the estimator for using the "small" range cardinality
     // correction formula
     private final double smallEstimatorCutoff;
+    // the cutoff value of the estimator for using the "large" range cardinality
+    // correction formula
+    private final double largeEstimatorCutoff;
 
     // ========================================================================
     /**
@@ -192,6 +195,7 @@ public class HLL {
         this.pwMaxMask = HLLUtil.pwMaxMask(regwidth);
         this.alphaMSquared = HLLUtil.alphaMSquared(m);
         this.smallEstimatorCutoff = HLLUtil.smallEstimatorCutoff(m);
+        this.largeEstimatorCutoff = HLLUtil.largeEstimatorCutoff(log2m, regwidth);
 
         if(expthresh == -1) {
             this.explicitAuto = true;
@@ -284,6 +288,7 @@ public class HLL {
         this.pwMaxMask = HLLUtil.pwMaxMask(regwidth);
         this.alphaMSquared = HLLUtil.alphaMSquared(m);
         this.smallEstimatorCutoff = HLLUtil.smallEstimatorCutoff(m);
+        this.largeEstimatorCutoff = HLLUtil.largeEstimatorCutoff(log2m, regwidth);
 
         this.explicitAuto = false;
         this.explicitOff = false;
@@ -546,7 +551,7 @@ public class HLL {
         final double estimator = alphaMSquared / sum;
         if((numberOfZeroes != 0) && (estimator < smallEstimatorCutoff)) {
             return HLLUtil.smallEstimator(m, numberOfZeroes);
-        } else if(estimator <= HLLUtil.largeEstimatorCutoff(log2m, regwidth)) {
+        } else if(estimator <= largeEstimatorCutoff) {
             return estimator;
         } else {
             return HLLUtil.largeEstimator(log2m, regwidth, estimator);
@@ -580,7 +585,7 @@ public class HLL {
         final double estimator = alphaMSquared / sum;
         if((numberOfZeroes != 0) && (estimator < smallEstimatorCutoff)) {
             return HLLUtil.smallEstimator(m, numberOfZeroes);
-        } else if(estimator <= HLLUtil.largeEstimatorCutoff(log2m, regwidth)) {
+        } else if(estimator <= largeEstimatorCutoff) {
             return estimator;
         } else {
             return HLLUtil.largeEstimator(log2m, regwidth, estimator);
