@@ -16,6 +16,8 @@ package net.agkn.hll.util;
  * limitations under the License.
  */
 
+import net.agkn.hll.HLL;
+
 /**
  * Static functions for computing constants and parameters used in the HLL
  * algorithm.
@@ -23,6 +25,63 @@ package net.agkn.hll.util;
  * @author timon
  */
 public final class HLLUtil {
+    /**
+     * Precomputed <code>pwMaxMask</code> values indexed by <code>registerSizeInBits</code>.
+     * Calculated with this formula:
+     * <pre>
+     *     int maxRegisterValue = (1 << registerSizeInBits) - 1;
+     *     // Mask with all bits set except for (maxRegisterValue - 1) least significant bits (see #addRaw())
+     *     return ~((1L << (maxRegisterValue - 1)) - 1);
+     * </pre>
+     *
+     * @see #pwMaxMask(int)
+     */
+    private static final long[] PW_MASK = {
+            ~((1L << (((1 << 0) - 1) - 1)) - 1),
+            ~((1L << (((1 << 1) - 1) - 1)) - 1),
+            ~((1L << (((1 << 2) - 1) - 1)) - 1),
+            ~((1L << (((1 << 3) - 1) - 1)) - 1),
+            ~((1L << (((1 << 4) - 1) - 1)) - 1),
+            ~((1L << (((1 << 5) - 1) - 1)) - 1),
+            ~((1L << (((1 << 6) - 1) - 1)) - 1),
+            ~((1L << (((1 << 7) - 1) - 1)) - 1),
+            ~((1L << (((1 << 8) - 1) - 1)) - 1)
+    };
+
+    /**
+     * Precomputed <code>twoToL</code> values indexed by a linear combination of
+     * <code>regWidth</code> and <code>log2m</code>. Calculated with this formula:
+     *
+     * <pre>
+     *     int maxRegisterValue = (1 << registerSizeInBits) - 1;
+     *     // since 1 is added to p(w) only maxRegisterValue - 1 bits are inspected
+     *     final int pwBits = (maxRegisterValue - 1);
+     *     final int totalBits = (pwBits + log2m);
+     *     final long twoToL = (1L << totalBits);
+     * </pre>
+     *
+     * The array is one-dimensional and can be accessed by using index
+     * <code>(REG_WIDTH_INDEX_MULTIPLIER * regWidth) + log2m</code>
+     * for <code>regWidth</code> and <code>log2m</code> between the specified
+     * <code>HLL.{MINIMUM,MAXIMUM}_{REGWIDTH,LOG2M}_PARAM</code> constants.
+     *
+     * @see #largeEstimatorCutoff(int, int), #largeEstimator(int, int, double),
+     */
+    private static final long[] TWO_TO_L = new long[(HLL.MAXIMUM_REGWIDTH_PARAM + 1) * (HLL.MAXIMUM_LOG2M_PARAM + 1)];
+
+    /**
+     * Spacing constant used to compute offsets into {@link TWO_TO_L}.
+     */
+    private static final int REG_WIDTH_INDEX_MULTIPLIER = HLL.MAXIMUM_LOG2M_PARAM + 1;
+
+    static {
+        for(int regWidth = HLL.MINIMUM_REGWIDTH_PARAM; regWidth <= HLL.MAXIMUM_REGWIDTH_PARAM; regWidth++) {
+            for(int log2m = HLL.MINIMUM_LOG2M_PARAM ; log2m <= HLL.MAXIMUM_LOG2M_PARAM; log2m++) {
+                TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * regWidth) + log2m] = (1L << (((1 << regWidth) - 1 - 1) + log2m));
+            }
+        }
+    }
+
     // ************************************************************************
     /**
      * Computes the bit-width of HLL registers necessary to estimate a set of
@@ -79,9 +138,7 @@ public final class HLLUtil {
      * @see #registerBitSize(long)
      */
     public static long pwMaxMask(final int registerSizeInBits) {
-        int maxRegisterValue = (1 << registerSizeInBits) - 1;
-        // Mask with all bits set except for (maxRegisterValue - 1) least significant bits (see #addRaw())
-        return ~((1L << (maxRegisterValue - 1)) - 1);
+        return PW_MASK[registerSizeInBits];
     }
 
     // ========================================================================
@@ -121,12 +178,7 @@ public final class HLLUtil {
      * @see #largeEstimator(int, int, double)
      */
     public static double largeEstimatorCutoff(final int log2m, final int registerSizeInBits) {
-        int maxRegisterValue = (1 << registerSizeInBits) - 1;
-        // since 1 is added to p(w) only maxRegisterValue - 1 bits are inspected
-        final int pwBits = (maxRegisterValue - 1);
-        final int totalBits = (pwBits + log2m);
-        final long twoToL = (1L << totalBits);
-        return (double)twoToL/30;
+        return (TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m]) / 30.0;
     }
 
     /**
@@ -140,12 +192,7 @@ public final class HLLUtil {
      * @return a corrected cardinality estimate.
      */
     public static double largeEstimator(final int log2m, final int registerSizeInBits, final double estimator) {
-        int maxRegisterValue = (1 << registerSizeInBits) - 1;
-        // since 1 is added to p(w) only maxRegisterValue - 1 bits are inspected
-        final int pwBits = (maxRegisterValue - 1);
-        final int totalBits = (pwBits + log2m);
-        final long twoToL = (1L << totalBits);
-
-        return (-1 * twoToL) * Math.log(1.0 - (estimator/twoToL));
+        return (-1 * TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m])
+                * Math.log(1.0 - (estimator/TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m]));
     }
 }
