@@ -50,24 +50,18 @@ public final class HLLUtil {
 
     /**
      * Precomputed <code>twoToL</code> values indexed by a linear combination of
-     * <code>regWidth</code> and <code>log2m</code>. Calculated with this formula:
-     *
-     * <pre>
-     *     int maxRegisterValue = (1 << registerSizeInBits) - 1;
-     *     // since 1 is added to p(w) only maxRegisterValue - 1 bits are inspected
-     *     final int pwBits = (maxRegisterValue - 1);
-     *     final int totalBits = (pwBits + log2m);
-     *     final long twoToL = (1L << totalBits);
-     * </pre>
+     * <code>regWidth</code> and <code>log2m</code>.
      *
      * The array is one-dimensional and can be accessed by using index
      * <code>(REG_WIDTH_INDEX_MULTIPLIER * regWidth) + log2m</code>
      * for <code>regWidth</code> and <code>log2m</code> between the specified
      * <code>HLL.{MINIMUM,MAXIMUM}_{REGWIDTH,LOG2M}_PARAM</code> constants.
      *
-     * @see #largeEstimatorCutoff(int, int), #largeEstimator(int, int, double),
+     * @see #largeEstimator(int, int, double)
+     * @see #largeEstimatorCutoff(int, int)
+     * @see <a href='http://research.neustar.biz/2013/01/24/hyperloglog-googles-take-on-engineering-hll/'>Blog post with section on 2^L</a>
      */
-    private static final long[] TWO_TO_L = new long[(HLL.MAXIMUM_REGWIDTH_PARAM + 1) * (HLL.MAXIMUM_LOG2M_PARAM + 1)];
+    private static final double[] TWO_TO_L = new double[(HLL.MAXIMUM_REGWIDTH_PARAM + 1) * (HLL.MAXIMUM_LOG2M_PARAM + 1)];
 
     /**
      * Spacing constant used to compute offsets into {@link TWO_TO_L}.
@@ -77,7 +71,15 @@ public final class HLLUtil {
     static {
         for(int regWidth = HLL.MINIMUM_REGWIDTH_PARAM; regWidth <= HLL.MAXIMUM_REGWIDTH_PARAM; regWidth++) {
             for(int log2m = HLL.MINIMUM_LOG2M_PARAM ; log2m <= HLL.MAXIMUM_LOG2M_PARAM; log2m++) {
-                TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * regWidth) + log2m] = (1L << (((1 << regWidth) - 1 - 1) + log2m));
+                int maxRegisterValue = (1 << regWidth) - 1;
+
+                // Since 1 is added to p(w) in the insertion algorithm, only
+                // (maxRegisterValue - 1) bits are inspected hence the hash
+                // space is one power of two smaller.
+                final int pwBits = (maxRegisterValue - 1);
+                final int totalBits = (pwBits + log2m);
+                final double twoToL = Math.pow(2, totalBits);
+                TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * regWidth) + log2m] = twoToL;
             }
         }
     }
@@ -92,7 +94,7 @@ public final class HLLUtil {
      * @return a register size in bits (i.e. <code>log2(log2(n))</code>)
      */
     public static int registerBitSize(final long expectedUniqueElements) {
-        return Math.max(4/*min size defined in paper*/,
+        return Math.max(HLL.MINIMUM_REGWIDTH_PARAM,
                         (int)Math.ceil(NumberUtil.log2(NumberUtil.log2(expectedUniqueElements))));
     }
 
@@ -103,9 +105,9 @@ public final class HLLUtil {
      * @param  m this must be a power of two, cannot be less than
      *         16 (2<sup>4</sup>), and cannot be greater than 65536 (2<sup>16</sup>).
      * @return gamma times <code>registerCount</code> squared where gamma is
-     *         based on the value of <code>registerCount</code>
+     *         based on the value of <code>registerCount</code>.
      * @throws IllegalArgumentException if <code>registerCount</code> is less
-     *         than 16
+     *         than 16.
      */
     public static double alphaMSquared(final int m) {
         switch(m) {
@@ -170,29 +172,31 @@ public final class HLLUtil {
 
     /**
      * The cutoff for using the "large range correction" formula, from the
-     * HyperLogLog algorithm.
+     * HyperLogLog algorithm, adapted for 64 bit hashes.
      *
      * @param  log2m log-base-2 of the number of registers in the HLL. <em>b<em> in the paper.
      * @param  registerSizeInBits the size of the HLL registers, in bits.
      * @return the cutoff for the large range correction.
      * @see #largeEstimator(int, int, double)
+     * @see <a href='http://research.neustar.biz/2013/01/24/hyperloglog-googles-take-on-engineering-hll/'>Blog post with section on 64 bit hashes and "large range correction" cutoff</a>
      */
     public static double largeEstimatorCutoff(final int log2m, final int registerSizeInBits) {
         return (TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m]) / 30.0;
     }
 
     /**
-     * The "large range correction" formula from the HyperLogLog algorithm. Only
-     * appropriate for estimators whose value exceeds the return of
-     * {@link #largeEstimatorCutoff(int, int)}.
+     * The "large range correction" formula from the HyperLogLog algorithm, adapted
+     * for 64 bit hashes. Only appropriate for estimators whose value exceeds
+     * the return of {@link #largeEstimatorCutoff(int, int)}.
      *
      * @param  log2m log-base-2 of the number of registers in the HLL. <em>b<em> in the paper.
      * @param  registerSizeInBits the size of the HLL registers, in bits.
      * @param  estimator the original estimator ("E" in the paper).
      * @return a corrected cardinality estimate.
+     * @see <a href='http://research.neustar.biz/2013/01/24/hyperloglog-googles-take-on-engineering-hll/'>Blog post with section on 64 bit hashes and "large range correction"</a>
      */
     public static double largeEstimator(final int log2m, final int registerSizeInBits, final double estimator) {
-        return (-1 * TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m])
-                * Math.log(1.0 - (estimator/TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m]));
+        final double twoToL = TWO_TO_L[(REG_WIDTH_INDEX_MULTIPLIER * registerSizeInBits) + log2m];
+        return -1 * twoToL * Math.log(1.0 - (estimator/twoToL));
     }
 }

@@ -89,7 +89,7 @@ HLL is available in Maven Central. Include it in your project with:
 <dependency>
     <groupId>net.agkn</groupId>
     <artifactId>hll</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
 </dependency>
 ```
 
