@@ -1,3 +1,15 @@
+v1.6.0 - Jul 29, 2014
+---------------------
+* Added support for registering schema versions.
+
+v1.5.2 - Jul 16, 2014
+---------------------
+* Fixed #10: Long overflow bug in `TWO_TO_L` calculation when `regwidth = 6`.
+
+v1.5.1 - Feb 26, 2014
+---------------------
+* Fixed serialization compabitility issue. `expthresh` was not being decoded properly.
+
 v1.5.0 - Feb 21, 2014
 ---------------------
 * Fixed #5: Added HLL#clone().

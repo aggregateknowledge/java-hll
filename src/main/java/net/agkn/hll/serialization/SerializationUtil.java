@@ -76,6 +76,7 @@ public class SerializationUtil {
 
     // ************************************************************************
     // Serialization utilities
+
     /**
      * Schema version one (v1).
      */
@@ -87,16 +88,37 @@ public class SerializationUtil {
     public static ISchemaVersion DEFAULT_SCHEMA_VERSION = VERSION_ONE;
 
     /**
+     * List of registered schema versions, indexed by their version numbers. If
+     * an entry is <code>null</code>, then no such schema version is registered.
+     * Similarly, registering a new schema version simply entails assigning an
+     * {@link ISchemaVersion} instance to the appropriate index of this array.<p/>
+     *
+     * By default, only {@link SchemaVersionOne} is registered. Note that version
+     * zero will always be reserved for internal (e.g. proprietary, legacy) schema
+     * specifications/implementations and will never be assigned to in by this
+     * library.
+     */
+    public static ISchemaVersion[] REGISTERED_SCHEMA_VERSIONS = new ISchemaVersion[16];
+
+    static {
+        REGISTERED_SCHEMA_VERSIONS[1] = VERSION_ONE;
+    }
+
+    /**
      * @param  schemaVersionNumber the version number of the {@link ISchemaVersion}
-     *         desired. This must be a valid schema version number.
+     *         desired. This must be a registered schema version number.
      * @return The {@link ISchemaVersion} for the given number. This will never
      *         be <code>null</code>.
      */
     public static ISchemaVersion getSchemaVersion(final int schemaVersionNumber) {
-        switch(schemaVersionNumber) {
-            case 1: return VERSION_ONE;
-            default: throw new RuntimeException("Unknown schema version number " + schemaVersionNumber);
+        if(schemaVersionNumber >= REGISTERED_SCHEMA_VERSIONS.length || schemaVersionNumber < 0) {
+            throw new RuntimeException("Invalid schema version number " + schemaVersionNumber);
         }
+        final ISchemaVersion schemaVersion = REGISTERED_SCHEMA_VERSIONS[schemaVersionNumber];
+        if(schemaVersion == null) {
+            throw new RuntimeException("Unknown schema version number " + schemaVersionNumber);
+        }
+        return schemaVersion;
     }
 
     /**
@@ -128,7 +150,7 @@ public class SerializationUtil {
      * @param typeOrdinal the type ordinal of the HLL to encode.
      * @return the packed version byte
      */
-    /*package*/ static byte packVersionByte(final int schemaVersion, final int typeOrdinal) {
+    public static byte packVersionByte(final int schemaVersion, final int typeOrdinal) {
         return (byte)(((NIBBLE_MASK & schemaVersion) << NIBBLE_BITS) | (NIBBLE_MASK & typeOrdinal));
     }
     /**
@@ -160,7 +182,7 @@ public class SerializationUtil {
      *
      * @return the packed cutoff byte
      */
-    /*package*/ static byte packCutoffByte(final int explicitCutoff, final boolean sparseEnabled) {
+    public static byte packCutoffByte(final int explicitCutoff, final boolean sparseEnabled) {
         final int sparseBit = (sparseEnabled ? (1 << EXPLICIT_CUTOFF_BITS) : 0);
         return (byte)(sparseBit | (EXPLICIT_CUTOFF_MASK & explicitCutoff));
     }
@@ -181,7 +203,7 @@ public class SerializationUtil {
      *         be at least 0 and at most 31)
      * @return the packed parameters byte
      */
-    /*package*/ static byte packParametersByte(final int registerWidth, final int registerCountLog2) {
+    public static byte packParametersByte(final int registerWidth, final int registerCountLog2) {
         final int widthBits = ((registerWidth - 1) & REGISTER_WIDTH_MASK);
         final int countBits = (registerCountLog2 & LOG2_REGISTER_COUNT_MASK);
         return (byte)((widthBits << LOG2_REGISTER_COUNT_BITS) | countBits);
@@ -194,7 +216,7 @@ public class SerializationUtil {
      * @param  cutoffByte the cutoff byte of the serialized HLL
      * @return the 'sparse-enabled' boolean
      */
-    /*package*/ static boolean sparseEnabled(final byte cutoffByte) {
+    public static boolean sparseEnabled(final byte cutoffByte) {
         return ((cutoffByte >>> EXPLICIT_CUTOFF_BITS) & 1) == 1;
     }
 
@@ -205,7 +227,7 @@ public class SerializationUtil {
      * @param  cutoffByte the cutoff byte of the serialized HLL
      * @return the explicit cutoff value
      */
-    /*package*/ static int explicitCutoff(final byte cutoffByte) {
+    public static int explicitCutoff(final byte cutoffByte) {
         return (cutoffByte & EXPLICIT_CUTOFF_MASK);
     }
 
@@ -216,7 +238,7 @@ public class SerializationUtil {
      * @param  versionByte the version byte of the serialized HLL
      * @return the schema version of the serialized HLL
      */
-    /*package*/ static int schemaVersion(final byte versionByte) {
+    public static int schemaVersion(final byte versionByte) {
         return NIBBLE_MASK & (versionByte >>> NIBBLE_BITS);
     }
 
@@ -226,7 +248,7 @@ public class SerializationUtil {
      * @param  versionByte the version byte of the serialized HLL
      * @return the type ordinal of the serialized HLL
      */
-    /*package*/ static int typeOrdinal(final byte versionByte) {
+    public static int typeOrdinal(final byte versionByte) {
         return (versionByte & NIBBLE_MASK);
     }
 
@@ -239,7 +261,7 @@ public class SerializationUtil {
      *
      * @see #packParametersByte(int, int)
      */
-    /*package*/ static int registerWidth(final byte parametersByte) {
+    public static int registerWidth(final byte parametersByte) {
         return ((parametersByte >>> LOG2_REGISTER_COUNT_BITS) & REGISTER_WIDTH_MASK) + 1;
     }
 
@@ -252,7 +274,7 @@ public class SerializationUtil {
      *
      * @see #packParametersByte(int, int)
      */
-    /*package*/ static int registerCountLog2(final byte parametersByte) {
+    public static int registerCountLog2(final byte parametersByte) {
         return (parametersByte & LOG2_REGISTER_COUNT_MASK);
     }
 }
