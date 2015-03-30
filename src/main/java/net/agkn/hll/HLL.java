@@ -16,6 +16,7 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
@@ -59,7 +60,7 @@ import net.agkn.hll.util.NumberUtil;
  *
  * @author timon
  */
-public class HLL implements Cloneable {
+public class HLL implements Cloneable, Serializable {
     // minimum and maximum values for the log-base-2 of the number of registers
     // in the HLL
     public static final int MINIMUM_LOG2M_PARAM = 4;
