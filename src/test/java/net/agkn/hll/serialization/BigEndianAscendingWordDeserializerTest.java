@@ -17,12 +17,10 @@ package net.agkn.hll.serialization;
  */
 
 
-import org.testng.annotations.Test;
 import java.util.Random;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Unit and smoke tests for {@link BigEndianAscendingWordDeserializer}.
@@ -33,7 +31,6 @@ public class BigEndianAscendingWordDeserializerTest {
     /**
      * Error checking tests for constructor.
      */
-    @SuppressWarnings("unused")
     @Test
     public void constructorErrorTest() {
         // word length too small

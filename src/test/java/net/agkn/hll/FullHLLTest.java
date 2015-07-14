@@ -16,17 +16,14 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
 import net.agkn.hll.util.BitVector;
 import net.agkn.hll.util.HLLUtil;
 import net.agkn.hll.util.LongIterator;
-
-import org.testng.annotations.Test;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#FULL}.

@@ -16,10 +16,10 @@ package net.agkn.hll.util;
  * limitations under the License.
  */
 
-import static org.testng.Assert.assertEquals;
 import net.agkn.hll.HLL;
 
-import org.testng.annotations.Test;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Tests {@link HLLUtil} static methods.

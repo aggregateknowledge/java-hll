@@ -16,12 +16,10 @@ package net.agkn.hll.serialization;
  * limitations under the License.
  */
 
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
-
 import java.util.Arrays;
 
-import org.testng.annotations.Test;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link BigEndianAscendingWordSerializer}.
@@ -32,7 +30,6 @@ public class BigEndianAscendingWordSerializerTest {
     /**
      * Error checking tests for constructor.
      */
-    @SuppressWarnings("unused")
     @Test
     public void constructorErrorTest() {
         // word length too small

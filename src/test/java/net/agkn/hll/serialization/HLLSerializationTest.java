@@ -2,7 +2,9 @@ package net.agkn.hll.serialization;
 
 import net.agkn.hll.HLL;
 import net.agkn.hll.HLLType;
-import org.testng.annotations.Test;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +16,6 @@ import static net.agkn.hll.HLL.MAXIMUM_REGWIDTH_PARAM;
 import static net.agkn.hll.HLL.MINIMUM_EXPTHRESH_PARAM;
 import static net.agkn.hll.HLL.MINIMUM_LOG2M_PARAM;
 import static net.agkn.hll.HLL.MINIMUM_REGWIDTH_PARAM;
-import static org.testng.Assert.assertEquals;
 
 /**
  * Serialization smoke-tests.
@@ -34,11 +35,10 @@ public class HLLSerializationTest {
     public void serializationSmokeTest() throws Exception {
         final Random random = new Random(RANDOM_SEED);
         final int randomCount = 250;
-        final List<Long> randoms = new ArrayList<Long>(randomCount){{
-            for (int i=0; i<randomCount; i++) {
-                add(random.nextLong());
-            }
-        }};
+        final List<Long> randoms = new ArrayList<Long>(randomCount);
+        for (int i=0; i<randomCount; i++) {
+          randoms.add(random.nextLong());
+      }
 
         assertCardinality(HLLType.EMPTY, randoms);
         assertCardinality(HLLType.EXPLICIT, randoms);

@@ -154,13 +154,11 @@
           <version>0.7.1</version>
         </dependency>
 
-        <!-- NOTE:  the "jdk15" classifier is "JDK 1.5+" -->
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng-version}</version>
-            <scope>test</scope>
-            <classifier>jdk15</classifier>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.10</version>
+          <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -172,7 +170,5 @@
         <!-- Testing versions -->
         <easymock-version>3.0</easymock-version>
         <powermock-version>1.4.8</powermock-version>
-        <testng-version>5.7</testng-version>
-        <fastutil-version>6.5.11</fastutil-version>
     </properties>
 </project>
