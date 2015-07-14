@@ -704,7 +704,7 @@ public class HLL implements Cloneable {
                         sparseProbabilisticStorage = other.sparseProbabilisticStorage.clone();
                     } else {
                         initializeStorage(HLLType.FULL);
-                        for(IntByteCursor c : sparseProbabilisticStorage) {
+                        for(IntByteCursor c : other.sparseProbabilisticStorage) {
                           final int registerIndex = c.key;
                           final byte registerValue = c.value;
                           probabilisticStorage.setMaxRegister(registerIndex, registerValue);
@@ -746,7 +746,7 @@ public class HLL implements Cloneable {
                         sparseProbabilisticStorage = other.sparseProbabilisticStorage.clone();
                     } else {
                         initializeStorage(HLLType.FULL);
-                        for(IntByteCursor c : sparseProbabilisticStorage) {
+                        for(IntByteCursor c : other.sparseProbabilisticStorage) {
                           final int registerIndex = c.key;
                           final byte registerValue = c.value;
                           probabilisticStorage.setMaxRegister(registerIndex, registerValue);
