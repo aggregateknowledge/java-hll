@@ -19,15 +19,16 @@ package net.agkn.hll.serialization;
 
 import java.util.Random;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import com.carrotsearch.randomizedtesting.RandomizedTest;
 
 /**
  * Unit and smoke tests for {@link BigEndianAscendingWordDeserializer}.
  *
  * @author timon
  */
-public class BigEndianAscendingWordDeserializerTest {
+public class BigEndianAscendingWordDeserializerTest extends RandomizedTest {
     /**
      * Error checking tests for constructor.
      */
@@ -107,7 +108,7 @@ public class BigEndianAscendingWordDeserializerTest {
     @Test
     public void randomSmokeTest() {
         for(int wordLength=5; wordLength<65; wordLength++) {
-            runRandomTest(wordLength, 3/*bytePadding, arbitrary*/, 100000/*wordCount, arbitrary*/, (long)wordLength/*seed, arbitrary*/);
+            runRandomTest(wordLength, 3/*bytePadding, arbitrary*/, 100000/*wordCount, arbitrary*/);
         }
     }
 
@@ -120,7 +121,8 @@ public class BigEndianAscendingWordDeserializerTest {
      * @param wordCount the number of word values to test
      * @param seed the seed to the random value generator
      */
-    private static void runRandomTest(final int wordLength, final int bytePadding, final int wordCount, final long seed) {
+    private static void runRandomTest(final int wordLength, final int bytePadding, final int wordCount) {
+        final long seed = randomLong();
         final Random random = new Random(seed);
         final Random verificationRandom = new Random(seed);
 

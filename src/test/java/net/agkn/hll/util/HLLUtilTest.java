@@ -41,7 +41,7 @@ public class HLLUtilTest {
                 // and original paper (Fig. 3) for information on 2^L and
                 // "large range correction" cutoff.
                 final double expected = Math.pow(2, Math.pow(2, regWidth) - 2 + log2m) / 30.0;
-                assertEquals(cutoff, expected);
+                assertEquals(cutoff, expected, 0.0001);
             }
         }
     }

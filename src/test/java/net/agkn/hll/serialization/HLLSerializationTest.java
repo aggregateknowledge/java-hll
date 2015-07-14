@@ -3,10 +3,12 @@ package net.agkn.hll.serialization;
 import net.agkn.hll.HLL;
 import net.agkn.hll.HLLType;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
+import com.carrotsearch.randomizedtesting.RandomizedTest;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -23,17 +25,14 @@ import static net.agkn.hll.HLL.MINIMUM_REGWIDTH_PARAM;
  * @author yerenkow
  * @author benl
  */
-public class HLLSerializationTest {
-    // A fixed random seed so that this test is reproducible.
-    private static final long RANDOM_SEED = 1L;
-
+public class HLLSerializationTest extends RandomizedTest {
     /**
      * A smoke-test that covers serialization/deserialization of an HLL
      * under all possible parameters.
      */
     @Test
     public void serializationSmokeTest() throws Exception {
-        final Random random = new Random(RANDOM_SEED);
+        final Random random = new Random(randomLong());
         final int randomCount = 250;
         final List<Long> randoms = new ArrayList<Long>(randomCount);
         for (int i=0; i<randomCount; i++) {
@@ -65,12 +64,12 @@ public class HLLSerializationTest {
                         HLL copy = HLL.fromBytes(hll.toBytes());
                         assertEquals(copy.cardinality(), hll.cardinality());
                         assertEquals(copy.getType(), hll.getType());
-                        assertEquals(copy.toBytes(), hll.toBytes());
+                        assertTrue(Arrays.equals(copy.toBytes(), hll.toBytes()));
 
                         HLL clone = hll.clone();
                         assertEquals(clone.cardinality(), hll.cardinality());
                         assertEquals(clone.getType(), hll.getType());
-                        assertEquals(clone.toBytes(), hll.toBytes());
+                        assertTrue(Arrays.equals(clone.toBytes(), hll.toBytes()));
                     }
                 }
             }

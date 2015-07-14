@@ -16,10 +16,7 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.junit.Assert.*;
 import org.junit.Test;
-
-import java.util.Random;
 
 import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
@@ -27,13 +24,14 @@ import net.agkn.hll.util.HLLUtil;
 
 import com.carrotsearch.hppc.IntByteHashMap;
 import com.carrotsearch.hppc.cursors.IntByteCursor;
+import com.carrotsearch.randomizedtesting.RandomizedTest;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#SPARSE}.
  *
  * @author timon
  */
-public class SparseHLLTest {
+public class SparseHLLTest extends RandomizedTest {
     private static final int log2m = 11;
 
     /**
@@ -396,16 +394,13 @@ public class SparseHLLTest {
         final int regwidth = 5/*arbitrary*/;
         final int sparseThreshold = 256/*arbitrary*/;
 
-        final long seed = 1L;
-        final Random random = new Random(seed);
-
         for(int run=0; run<100; run++) {
             final HLL hll = new HLL(log2m, regwidth, 128/*explicitThreshold, arbitrary, unused*/, sparseThreshold, HLLType.SPARSE);
 
             final IntByteHashMap map = new IntByteHashMap();
 
             for(int i=0; i<sparseThreshold; i++) {
-                final long rawValue = random.nextLong();
+                final long rawValue = randomLong();
 
                 final short registerIndex = ProbabilisticTestUtil.getRegisterIndex(rawValue, log2m);
                 final byte registerValue = ProbabilisticTestUtil.getRegisterValue(rawValue, log2m);

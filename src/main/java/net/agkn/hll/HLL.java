@@ -427,8 +427,7 @@ public class HLL implements Cloneable {
         // NOTE:  no +1 as in paper since 0-based indexing
         final int j = (int)(rawValue & mBitsMask);
 
-        assert sparseProbabilisticStorage.containsKey(j);
-        final byte currentValue = sparseProbabilisticStorage.get(j);
+        final byte currentValue = sparseProbabilisticStorage.getOrDefault(j, (byte) 0);
         if(p_w > currentValue) {
             sparseProbabilisticStorage.put(j, p_w);
         }
@@ -546,8 +545,7 @@ public class HLL implements Cloneable {
         double sum = 0;
         int numberOfZeroes = 0/*"V" in the paper*/;
         for(int j=0; j<m; j++) {
-            assert sparseProbabilisticStorage.containsKey(j); 
-            final long register = sparseProbabilisticStorage.get(j);
+            final long register = sparseProbabilisticStorage.getOrDefault(j, (byte) 0);
 
             sum += 1.0 / (1L << register);
             if(register == 0L) numberOfZeroes++;

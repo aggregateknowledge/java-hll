@@ -16,23 +16,22 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.HashSet;
-import java.util.Random;
 
 import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
 
 import com.carrotsearch.hppc.LongHashSet;
+import com.carrotsearch.randomizedtesting.RandomizedTest;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#EXPLICIT}.
  *
  * @author timon
  */
-public class ExplicitHLLTest {
+public class ExplicitHLLTest extends RandomizedTest {
     /**
      * Tests basic set semantics of {@link HLL#addRaw(long)}.
      */
@@ -179,11 +178,9 @@ public class ExplicitHLLTest {
         final HashSet<Long> canonical = new HashSet<Long>();
         final HLL hll = newHLL(explicitThreshold);
 
-        final long seed = 1L/*constant so results are reproducible*/;
-        final Random random = new Random(seed);
         for(int i=0;i<explicitThreshold;i++){
-            long randomLong = random.nextLong();
-            canonical.add(new Long(randomLong));
+            long randomLong = randomLong();
+            canonical.add(randomLong);
             hll.addRaw(randomLong);
         }
         final int canonicalCardinality = canonical.size();

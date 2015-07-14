@@ -26,6 +26,7 @@ import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
 import net.agkn.hll.util.NumberUtil;
 import static net.agkn.hll.ProbabilisticTestUtil.constructHLLValue;
+import static com.carrotsearch.randomizedtesting.RandomizedTest.*;
 
 /**
  * Generates test files for testing other implementations of HLL
@@ -37,8 +38,6 @@ public class IntegrationTestGenerator {
     // ************************************************************************
     // directory to output the generated tests
     private static final String OUTPUT_DIRECTORY = "/tmp/hll_test/";
-    // seed to make results reproducible
-    private static final long SEED = 1L;
 
     // ------------------------------------------------------------------------
     // configurations for HLLs, should mirror settings in PostgreSQL impl. tests
@@ -114,14 +113,12 @@ public class IntegrationTestGenerator {
     private static void globalStepTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "comprehensive_promotion", TestType.ADD);
 
-        final Random random = new Random(SEED);
-
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
         initLineAdd(output, hll, schemaVersion);
 
         for(int i=0; i<10000/*arbitrary*/; i++) {
-            cumulativeAddLine(output, hll, random.nextLong(), schemaVersion);
+            cumulativeAddLine(output, hll, randomLong(), schemaVersion);
         }
 
         output.flush();
@@ -223,7 +220,7 @@ public class IntegrationTestGenerator {
     private static void sparseRandomTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "sparse_random", TestType.ADD);
 
-        final Random random = new Random(SEED);
+        final Random random = new Random(randomLong());
 
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.SPARSE);
@@ -291,7 +288,7 @@ public class IntegrationTestGenerator {
     private static void explicitPromotionTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "explicit_promotion", TestType.UNION);
 
-        final Random random = new Random(SEED);
+        final Random random = new Random(randomLong());
 
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
@@ -324,7 +321,7 @@ public class IntegrationTestGenerator {
     private static void sparseProbabilisticPromotionTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "sparse_promotion", TestType.UNION);
 
-        final Random random = new Random(SEED);
+        final Random random = new Random(randomLong());
 
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
@@ -361,7 +358,7 @@ public class IntegrationTestGenerator {
     private static void explicitOverlapTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "explicit_explicit", TestType.UNION);
 
-        final Random random = new Random(SEED);
+        final Random random = new Random(randomLong());
 
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
@@ -396,7 +393,7 @@ public class IntegrationTestGenerator {
     private static void sparseProbabilisticOverlapTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "sparse_sparse", TestType.UNION);
 
-        final Random random = new Random(SEED);
+        final Random random = new Random(randomLong());
 
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
@@ -432,7 +429,7 @@ public class IntegrationTestGenerator {
     private static void probabilisticUnionTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "probabilistic_probabilistic", TestType.UNION);
 
-        final Random random = new Random(SEED);
+        final Random random = new Random(randomLong());
 
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
@@ -464,8 +461,6 @@ public class IntegrationTestGenerator {
     private static void globalUnionTest(final ISchemaVersion schemaVersion) throws IOException {
         final FileWriter output = openOutput(schemaVersion, "comprehensive", TestType.UNION);
 
-        final Random random = new Random(SEED);
-
         // the accumulator, starts empty
         final HLL hll = newHLL(HLLType.EMPTY);
         final HLL emptyHLL = newHLL(HLLType.EMPTY);
@@ -473,7 +468,7 @@ public class IntegrationTestGenerator {
         cumulativeUnionLine(output, hll, emptyHLL, schemaVersion);
 
         for(int i=0; i<1000/*number of rows to generate*/; i++) {
-            final HLL randomHLL = generateRandomHLL(random);
+            final HLL randomHLL = generateRandomHLL();
             cumulativeUnionLine(output, hll, randomHLL, schemaVersion);
         }
 
@@ -548,8 +543,8 @@ public class IntegrationTestGenerator {
      *         the HLL. This cannot be <code>null</code>.
      * @return the populated HLL. This will never be <code>null</code>.
      */
-    public static HLL generateRandomHLL(final Random random) {
-        final int randomTypeInt = random.nextInt(HLLType.values().length);
+    public static HLL generateRandomHLL() {
+        final int randomTypeInt = randomIntBetween(0, HLLType.values().length - 1);
         final HLLType type;
         switch(randomTypeInt) {
             case 0:
@@ -595,10 +590,10 @@ public class IntegrationTestGenerator {
 
         final HLL hll = newHLL(HLLType.EMPTY);
         for(int i=0; i<cardinalityBaseline; i++) {
-            hll.addRaw(random.nextLong());
+            hll.addRaw(randomLong());
         }
-        for(int i=0; i<random.nextInt(cardinalityCap - cardinalityBaseline); i++) {
-            hll.addRaw(random.nextLong());
+        for(int i=0; i<randomInt(cardinalityCap - cardinalityBaseline); i++) {
+            hll.addRaw(randomLong());
         }
 
         return hll;
