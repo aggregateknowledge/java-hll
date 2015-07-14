@@ -16,17 +16,18 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import java.util.HashSet;
 import java.util.Random;
 
 import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
+
 import org.testng.annotations.Test;
+
+import com.carrotsearch.hppc.LongHashSet;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#EXPLICIT}.
@@ -222,8 +223,8 @@ public class ExplicitHLLTest {
      * Asserts that values in both sets are exactly equal.
      */
     private static void assertElementsEqual(final HLL hllA, final HLL hllB) {
-        final LongOpenHashSet internalSetA = (LongOpenHashSet)getInternalState(hllA, "explicitStorage");
-        final LongOpenHashSet internalSetB = (LongOpenHashSet)getInternalState(hllB, "explicitStorage");
+        final LongHashSet internalSetA = hllA.explicitStorage;
+        final LongHashSet internalSetB = hllB.explicitStorage;
 
         assertTrue(internalSetA.equals(internalSetB));
     }

@@ -16,10 +16,9 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
+
 import java.util.Random;
 
 import net.agkn.hll.serialization.ISchemaVersion;
@@ -27,6 +26,9 @@ import net.agkn.hll.serialization.SerializationUtil;
 import net.agkn.hll.util.HLLUtil;
 
 import org.testng.annotations.Test;
+
+import com.carrotsearch.hppc.IntByteHashMap;
+import com.carrotsearch.hppc.cursors.IntByteCursor;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#SPARSE}.
@@ -402,8 +404,7 @@ public class SparseHLLTest {
         for(int run=0; run<100; run++) {
             final HLL hll = new HLL(log2m, regwidth, 128/*explicitThreshold, arbitrary, unused*/, sparseThreshold, HLLType.SPARSE);
 
-            final Int2ByteOpenHashMap map = new Int2ByteOpenHashMap();
-            map.defaultReturnValue((byte)0);
+            final IntByteHashMap map = new IntByteHashMap();
 
             for(int i=0; i<sparseThreshold; i++) {
                 final long rawValue = random.nextLong();
@@ -417,9 +418,9 @@ public class SparseHLLTest {
                 hll.addRaw(rawValue);
             }
 
-            for(int key : map.keySet()) {
-                final byte expectedRegisterValue = map.get(key);
-                assertRegisterPresent(hll, key, expectedRegisterValue);
+            for (IntByteCursor c : map) {
+                final byte expectedRegisterValue = map.get(c.key);
+                assertRegisterPresent(hll, c.key, expectedRegisterValue);
             }
         }
     }
@@ -433,7 +434,7 @@ public class SparseHLLTest {
     private static void assertRegisterPresent(final HLL hll,
                                               final int registerIndex,
                                               final int registerValue) {
-        final Int2ByteOpenHashMap sparseProbabilisticStorage = (Int2ByteOpenHashMap)getInternalState(hll, "sparseProbabilisticStorage");
+        final IntByteHashMap sparseProbabilisticStorage = hll.sparseProbabilisticStorage;
         assertEquals(sparseProbabilisticStorage.get(registerIndex), registerValue);
     }
 
@@ -443,7 +444,7 @@ public class SparseHLLTest {
     private static void assertOneRegisterSet(final HLL hll,
                                              final int registerIndex,
                                              final byte registerValue) {
-        final Int2ByteOpenHashMap sparseProbabilisticStorage = (Int2ByteOpenHashMap)getInternalState(hll, "sparseProbabilisticStorage");
+        final IntByteHashMap sparseProbabilisticStorage = hll.sparseProbabilisticStorage;
         assertEquals(sparseProbabilisticStorage.size(), 1);
         assertEquals(sparseProbabilisticStorage.get(registerIndex), registerValue);
     }
@@ -452,11 +453,12 @@ public class SparseHLLTest {
      * Asserts that all registers in the two {@link HLL} instances are identical.
      */
     private static void assertElementsEqual(final HLL hllA, final HLL hllB) {
-        final Int2ByteOpenHashMap sparseProbabilisticStorageA = (Int2ByteOpenHashMap)getInternalState(hllA, "sparseProbabilisticStorage");
-        final Int2ByteOpenHashMap sparseProbabilisticStorageB = (Int2ByteOpenHashMap)getInternalState(hllB, "sparseProbabilisticStorage");
+        final IntByteHashMap sparseProbabilisticStorageA = hllA.sparseProbabilisticStorage;
+        final IntByteHashMap sparseProbabilisticStorageB = hllB.sparseProbabilisticStorage;
         assertEquals(sparseProbabilisticStorageA.size(), sparseProbabilisticStorageB.size());
-        for(final int index : sparseProbabilisticStorageA.keySet()) {
-            assertEquals(sparseProbabilisticStorageA.get(index), sparseProbabilisticStorageB.get(index));
+        for (IntByteCursor c : sparseProbabilisticStorageA) {
+            assertEquals(sparseProbabilisticStorageA.get(c.key), 
+                         sparseProbabilisticStorageB.get(c.key));
         }
     }
 }
