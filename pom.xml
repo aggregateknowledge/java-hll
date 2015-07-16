@@ -75,6 +75,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -148,37 +149,16 @@
     <dependencies>
         <!-- Production dependencies :: Default scope -->
         <dependency>
-            <groupId>it.unimi.dsi</groupId>
-            <artifactId>fastutil</artifactId>
-            <version>${fastutil-version}</version>
+          <groupId>com.carrotsearch</groupId>
+          <artifactId>hppc</artifactId>
+          <version>0.7.1</version>
         </dependency>
 
-        <!-- Test dependencies :: Test scope -->
         <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>${easymock-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-easymock</artifactId>
-            <version>${powermock-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- NOTE:  the "jdk15" classifier is "JDK 1.5+" -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng-version}</version>
-            <scope>test</scope>
-            <classifier>jdk15</classifier>
+          <groupId>com.carrotsearch.randomizedtesting</groupId>
+          <artifactId>randomizedtesting-runner</artifactId>
+          <version>2.1.14</version>
+          <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -190,7 +170,5 @@
         <!-- Testing versions -->
         <easymock-version>3.0</easymock-version>
         <powermock-version>1.4.8</powermock-version>
-        <testng-version>5.7</testng-version>
-        <fastutil-version>6.5.11</fastutil-version>
     </properties>
 </project>

@@ -16,10 +16,10 @@ package net.agkn.hll.util;
  * limitations under the License.
  */
 
-import static org.testng.Assert.assertEquals;
 import net.agkn.hll.HLL;
 
-import org.testng.annotations.Test;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Tests {@link HLLUtil} static methods.
@@ -41,7 +41,7 @@ public class HLLUtilTest {
                 // and original paper (Fig. 3) for information on 2^L and
                 // "large range correction" cutoff.
                 final double expected = Math.pow(2, Math.pow(2, regWidth) - 2 + log2m) / 30.0;
-                assertEquals(cutoff, expected);
+                assertEquals(cutoff, expected, 0.0001);
             }
         }
     }

@@ -16,18 +16,14 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.powermock.reflect.Whitebox.getInternalState;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
 import net.agkn.hll.util.BitVector;
 import net.agkn.hll.util.HLLUtil;
 import net.agkn.hll.util.LongIterator;
-
-import org.testng.annotations.Test;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#FULL}.
@@ -163,7 +159,7 @@ public class FullHLLTest {
         { // scoped locally for sanity
             final int regwidth = 4;
             final HLL hll = new HLL(log2m, regwidth, 128/*explicitThreshold, arbitrary, unused*/, 256/*sparseThreshold, arbitrary, unused*/, HLLType.FULL);
-            final BitVector bitVector = (BitVector)getInternalState(hll, "probabilisticStorage")/*for testing convenience*/;
+            final BitVector bitVector = hll.probabilisticStorage;
 
             // lower-bounds of the register
             hll.addRaw(0x000000000000001L/*'j'=1*/);
@@ -210,7 +206,7 @@ public class FullHLLTest {
         { // scoped locally for sanity
             final int regwidth = 5;
             final HLL hll = new HLL(log2m, regwidth, 128/*explicitThreshold, arbitrary, unused*/, 256/*sparseThreshold, arbitrary, unused*/, HLLType.FULL);
-            final BitVector bitVector = (BitVector)getInternalState(hll, "probabilisticStorage")/*for testing convenience*/;
+            final BitVector bitVector = hll.probabilisticStorage;
 
             // lower-bounds of the register
             hll.addRaw(0x0000000000000001L/*'j'=1*/);
@@ -256,7 +252,7 @@ public class FullHLLTest {
         final int m = 1 << log2m;
 
         final HLL hll = new HLL(log2m, regwidth, 128/*explicitThreshold, arbitrary, unused*/, 256/*sparseThreshold, arbitrary, unused*/, HLLType.FULL);
-        final BitVector bitVector = (BitVector)getInternalState(hll, "probabilisticStorage")/*for testing convenience*/;
+        final BitVector bitVector = hll.probabilisticStorage;
         for(int i=0; i<m; i++)
             bitVector.setRegister(i, i);
 
@@ -338,8 +334,8 @@ public class FullHLLTest {
      * Asserts that the two HLLs are register-wise equal.
      */
     private static void assertElementsEqual(final HLL hllA, final HLL hllB) {
-        final BitVector bitVectorA = (BitVector)getInternalState(hllA, "probabilisticStorage")/*for testing convenience*/;
-        final BitVector bitVectorB = (BitVector)getInternalState(hllA, "probabilisticStorage")/*for testing convenience*/;
+        final BitVector bitVectorA = hllA.probabilisticStorage;
+        final BitVector bitVectorB = hllB.probabilisticStorage;
 
         final LongIterator iterA = bitVectorA.registerIterator();
         final LongIterator iterB = bitVectorB.registerIterator();
