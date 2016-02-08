@@ -16,17 +16,17 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.powermock.reflect.Whitebox.getInternalState;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
-import java.util.Random;
-
 import net.agkn.hll.serialization.ISchemaVersion;
 import net.agkn.hll.serialization.SerializationUtil;
 import net.agkn.hll.util.HLLUtil;
+import org.junit.Test;
 
-import org.testng.annotations.Test;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#SPARSE}.
@@ -433,7 +433,7 @@ public class SparseHLLTest {
     private static void assertRegisterPresent(final HLL hll,
                                               final int registerIndex,
                                               final int registerValue) {
-        final Int2ByteOpenHashMap sparseProbabilisticStorage = (Int2ByteOpenHashMap)getInternalState(hll, "sparseProbabilisticStorage");
+        final Int2ByteOpenHashMap sparseProbabilisticStorage = getInternalState(hll, "sparseProbabilisticStorage");
         assertEquals(sparseProbabilisticStorage.get(registerIndex), registerValue);
     }
 
@@ -443,7 +443,7 @@ public class SparseHLLTest {
     private static void assertOneRegisterSet(final HLL hll,
                                              final int registerIndex,
                                              final byte registerValue) {
-        final Int2ByteOpenHashMap sparseProbabilisticStorage = (Int2ByteOpenHashMap)getInternalState(hll, "sparseProbabilisticStorage");
+        final Int2ByteOpenHashMap sparseProbabilisticStorage = getInternalState(hll, "sparseProbabilisticStorage");
         assertEquals(sparseProbabilisticStorage.size(), 1);
         assertEquals(sparseProbabilisticStorage.get(registerIndex), registerValue);
     }
@@ -452,8 +452,8 @@ public class SparseHLLTest {
      * Asserts that all registers in the two {@link HLL} instances are identical.
      */
     private static void assertElementsEqual(final HLL hllA, final HLL hllB) {
-        final Int2ByteOpenHashMap sparseProbabilisticStorageA = (Int2ByteOpenHashMap)getInternalState(hllA, "sparseProbabilisticStorage");
-        final Int2ByteOpenHashMap sparseProbabilisticStorageB = (Int2ByteOpenHashMap)getInternalState(hllB, "sparseProbabilisticStorage");
+        final Int2ByteOpenHashMap sparseProbabilisticStorageA = getInternalState(hllA, "sparseProbabilisticStorage");
+        final Int2ByteOpenHashMap sparseProbabilisticStorageB = getInternalState(hllB, "sparseProbabilisticStorage");
         assertEquals(sparseProbabilisticStorageA.size(), sparseProbabilisticStorageB.size());
         for(final int index : sparseProbabilisticStorageA.keySet()) {
             assertEquals(sparseProbabilisticStorageA.get(index), sparseProbabilisticStorageB.get(index));

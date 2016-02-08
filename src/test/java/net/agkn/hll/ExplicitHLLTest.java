@@ -16,17 +16,17 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
-import static org.powermock.reflect.Whitebox.getInternalState;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.agkn.hll.serialization.ISchemaVersion;
+import net.agkn.hll.serialization.SerializationUtil;
+import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Random;
 
-import net.agkn.hll.serialization.ISchemaVersion;
-import net.agkn.hll.serialization.SerializationUtil;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 /**
  * Tests {@link HLL} of type {@link HLLType#EXPLICIT}.
@@ -177,14 +177,14 @@ public class ExplicitHLLTest {
     @Test
     public void randomValuesTest() {
         final int explicitThreshold = 4096;
-        final HashSet<Long> canonical = new HashSet<Long>();
+        final HashSet<Long> canonical = new HashSet<>();
         final HLL hll = newHLL(explicitThreshold);
 
         final long seed = 1L/*constant so results are reproducible*/;
         final Random random = new Random(seed);
         for(int i=0;i<explicitThreshold;i++){
             long randomLong = random.nextLong();
-            canonical.add(new Long(randomLong));
+            canonical.add(randomLong);
             hll.addRaw(randomLong);
         }
         final int canonicalCardinality = canonical.size();
@@ -222,8 +222,8 @@ public class ExplicitHLLTest {
      * Asserts that values in both sets are exactly equal.
      */
     private static void assertElementsEqual(final HLL hllA, final HLL hllB) {
-        final LongOpenHashSet internalSetA = (LongOpenHashSet)getInternalState(hllA, "explicitStorage");
-        final LongOpenHashSet internalSetB = (LongOpenHashSet)getInternalState(hllB, "explicitStorage");
+        final LongOpenHashSet internalSetA = getInternalState(hllA, "explicitStorage");
+        final LongOpenHashSet internalSetB = getInternalState(hllB, "explicitStorage");
 
         assertTrue(internalSetA.equals(internalSetB));
     }

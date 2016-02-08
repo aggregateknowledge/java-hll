@@ -39,8 +39,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
 
@@ -172,25 +172,24 @@
             <version>${powermock-version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- NOTE:  the "jdk15" classifier is "JDK 1.5+" -->
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng-version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
             <scope>test</scope>
-            <classifier>jdk15</classifier>
         </dependency>
     </dependencies>
 
     <!-- ================================================================== -->
     <properties>
         <!-- Production scope -->
-        <commons-codec-version>1.8</commons-codec-version>
+        <commons-codec-version>1.10</commons-codec-version>
 
         <!-- Testing versions -->
         <easymock-version>3.0</easymock-version>
         <powermock-version>1.4.8</powermock-version>
         <testng-version>5.7</testng-version>
-        <fastutil-version>6.5.11</fastutil-version>
+        <fastutil-version>7.0.10</fastutil-version>
+        <junit-version>4.12</junit-version>
     </properties>
 </project>

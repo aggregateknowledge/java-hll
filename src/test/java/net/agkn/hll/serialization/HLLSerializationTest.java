@@ -2,19 +2,16 @@ package net.agkn.hll.serialization;
 
 import net.agkn.hll.HLL;
 import net.agkn.hll.HLLType;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import static net.agkn.hll.HLL.MAXIMUM_EXPTHRESH_PARAM;
-import static net.agkn.hll.HLL.MAXIMUM_REGWIDTH_PARAM;
-import static net.agkn.hll.HLL.MINIMUM_EXPTHRESH_PARAM;
-import static net.agkn.hll.HLL.MINIMUM_LOG2M_PARAM;
-import static net.agkn.hll.HLL.MINIMUM_REGWIDTH_PARAM;
-import static org.testng.Assert.assertEquals;
+import static net.agkn.hll.HLL.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Serialization smoke-tests.
@@ -65,12 +62,12 @@ public class HLLSerializationTest {
                         HLL copy = HLL.fromBytes(hll.toBytes());
                         assertEquals(copy.cardinality(), hll.cardinality());
                         assertEquals(copy.getType(), hll.getType());
-                        assertEquals(copy.toBytes(), hll.toBytes());
+                        assertArrayEquals(copy.toBytes(), hll.toBytes());
 
                         HLL clone = hll.clone();
                         assertEquals(clone.cardinality(), hll.cardinality());
                         assertEquals(clone.getType(), hll.getType());
-                        assertEquals(clone.toBytes(), hll.toBytes());
+                        assertArrayEquals(clone.toBytes(), hll.toBytes());
                     }
                 }
             }

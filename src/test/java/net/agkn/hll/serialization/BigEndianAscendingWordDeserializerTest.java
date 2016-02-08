@@ -17,12 +17,13 @@ package net.agkn.hll.serialization;
  */
 
 
-import org.testng.annotations.Test;
+import org.junit.Test;
+
 import java.util.Random;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit and smoke tests for {@link BigEndianAscendingWordDeserializer}.

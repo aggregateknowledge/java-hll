@@ -16,12 +16,12 @@ package net.agkn.hll.serialization;
  * limitations under the License.
  */
 
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import org.junit.Test;
 
 import java.util.Arrays;
 
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link BigEndianAscendingWordSerializer}.

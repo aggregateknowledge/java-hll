@@ -16,15 +16,14 @@ package net.agkn.hll;
  * limitations under the License.
  */
 
+import net.agkn.hll.serialization.ISchemaVersion;
+import net.agkn.hll.serialization.SerializationUtil;
+import net.agkn.hll.util.NumberUtil;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
-import net.agkn.hll.HLL;
-import net.agkn.hll.HLLType;
-import net.agkn.hll.serialization.ISchemaVersion;
-import net.agkn.hll.serialization.SerializationUtil;
-import net.agkn.hll.util.NumberUtil;
 import static net.agkn.hll.ProbabilisticTestUtil.constructHLLValue;
 
 /**
@@ -660,7 +659,6 @@ public class IntegrationTestGenerator {
      *
      * @param  output The output {@link FileWriter writer}. This cannot be <code>null</code>.
      * @param  hll The "accumulator" HLL instance. This cannot be <code>null</code>.
-     * @param  rawValue The raw value added to the HLL.
      * @param  schemaVersion the schema with which to serialize the HLLs. This cannot
      *         be <code>null</code>.
      */

@@ -16,11 +16,11 @@ package net.agkn.hll.util;
  * limitations under the License.
  */
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import org.junit.Test;
 
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link BitVector}.
@@ -118,11 +118,11 @@ public class BitVectorTest {
         final LongIterator iter = vector.registerIterator();
 
         for(int i=0; i<count; i++) {
-            assertTrue(iter.hasNext(), String.format("expected more elements: width=%s, count=%s", width, count));
+            assertTrue(String.format("expected more elements: width=%s, count=%s", width, count), iter.hasNext());
             // TODO: fill with a sentinel value
             assertEquals(iter.next(), 0);
         }
-        assertFalse(iter.hasNext(), String.format("expected no more elements: width=%s, count=%s", width, count));
+        assertFalse(String.format("expected no more elements: width=%s, count=%s", width, count), iter.hasNext());
     }
 
     // ========================================================================
