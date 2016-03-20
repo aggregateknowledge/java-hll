@@ -1,6 +1,8 @@
 java-hll
 ========
 
+[![Build Status](https://travis-ci.org/hll/java-hll.svg?branch=master)](https://travis-ci.org/hll/java-hll)
+
 A Java implementation of [HyperLogLog](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf) whose goal is to be [storage-compatible](https://github.com/hll/hll-storage-spec) with other implementations.
 
 
