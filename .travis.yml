@@ -1,0 +1,3 @@
+language: java
+install: true
+script: mvn -B test
