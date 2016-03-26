@@ -1,10 +1,12 @@
 java-hll
 ========
 
-A Java implementation of [HyperLogLog](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf) whose goal is to be [storage-compatible](https://github.com/aggregateknowledge/hll-storage-spec) with other similar offerings from [Aggregate Knowledge](http://blog.aggregateknowledge.com/).
+[![Build Status](https://travis-ci.org/hll/java-hll.svg?branch=master)](https://travis-ci.org/hll/java-hll)
+
+A Java implementation of [HyperLogLog](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf) whose goal is to be [storage-compatible](https://github.com/hll/hll-storage-spec) with other implementations.
 
 
-**NOTE:** This implementation fully implements reading and writing all formats in the [v1.0.0 storage specification](https://github.com/aggregateknowledge/hll-storage-spec/blob/v1.0.0/STORAGE.md), but internal memory representation (and hence space-tradeoffs) may cause automatic "promotion" between representations to occur at different implementation-dependent points. To ensure interoperability between, for example, the [PostgreSQL implementation](https://github.com/aggregateknowledge/postgresql-hll) and this library, all promotion cutoffs should be explicitly defined.
+**NOTE:** This implementation fully implements reading and writing all formats in the [v1.0.0 storage specification](https://github.com/hll/hll-storage-spec/blob/v1.0.0/STORAGE.md), but internal memory representation (and hence space-tradeoffs) may cause automatic "promotion" between representations to occur at different implementation-dependent points. To ensure interoperability between, for example, the [PostgreSQL implementation](https://github.com/aggregateknowledge/postgresql-hll) and this library, all promotion cutoffs should be explicitly defined.
 
 Similarly, certain parameters have different bounds in order to deal with VM limitations like maximum array length. Specifically, `log2m` has a maximum value of 30 in this implementation whereas the storage specification states a maximum value of 31 (which can be realized in the PostgreSQL implementation).
 
@@ -126,13 +128,13 @@ hll1.union(hll2)/*modifies hll1 to contain the union*/;
 final long cardinalityUnion = hll1.cardinality();
 ```
 
-Reading an HLL from a hex representation of [storage specification, v1.0.0](https://github.com/aggregateknowledge/hll-storage-spec/blob/v1.0.0/STORAGE.md) (for example, retrieved from a [PostgreSQL database](https://github.com/aggregateknowledge/postgresql-hll)):
+Reading an HLL from a hex representation of [storage specification, v1.0.0](https://github.com/hll/hll-storage-spec/blob/v1.0.0/STORAGE.md) (for example, retrieved from a [PostgreSQL database](https://github.com/hll/postgresql-hll)):
 
 ```java
 final HLL hll = HLL.fromBytes(NumberUtil.fromHex(hexString));
 ```
 
-Writing an HLL to its hex representation of [storage specification, v1.0.0](https://github.com/aggregateknowledge/hll-storage-spec/blob/v1.0.0/STORAGE.md) (for example, to be inserted into a [PostgreSQL database](https://github.com/aggregateknowledge/postgresql-hll)):
+Writing an HLL to its hex representation of [storage specification, v1.0.0](https://github.com/hll/hll-storage-spec/blob/v1.0.0/STORAGE.md) (for example, to be inserted into a [PostgreSQL database](https://github.com/hll/postgresql-hll)):
 
 ```java
 final byte[] bytes = hll.toBytes();
