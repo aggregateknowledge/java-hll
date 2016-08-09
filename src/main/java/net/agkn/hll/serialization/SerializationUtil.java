@@ -91,7 +91,7 @@ public class SerializationUtil {
      * List of registered schema versions, indexed by their version numbers. If
      * an entry is <code>null</code>, then no such schema version is registered.
      * Similarly, registering a new schema version simply entails assigning an
-     * {@link ISchemaVersion} instance to the appropriate index of this array.<p/>
+     * {@link ISchemaVersion} instance to the appropriate index of this array.
      *
      * By default, only {@link SchemaVersionOne} is registered. Note that version
      * zero will always be reserved for internal (e.g. proprietary, legacy) schema
@@ -172,7 +172,7 @@ public class SerializationUtil {
      *             If 'auto' is chosen, this value should be <code>63</code>.
      *           </li>
      *           <li>
-     *             If a cutoff of 2<sup>n</sup> is desired, for <code>0 <= n < 31</code>,
+     *             If a cutoff of 2<sup>n</sup> is desired, for <code>0 &lt;= n &lt; 31</code>,
      *             this value should be <code>n + 1</code>.
      *           </li>
      *         </ul>
@@ -190,7 +190,7 @@ public class SerializationUtil {
     /**
      * Generates a byte that encodes the parameters of a
      * {@link HLLType#FULL} or {@link HLLType#SPARSE}
-     * HLL.<p/>
+     * HLL.
      *
      * The top 3 bits are used to encode <code>registerWidth - 1</code>
      * (range of <code>registerWidth</code> is thus 1-9) and the bottom 5

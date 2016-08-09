@@ -18,6 +18,8 @@ package net.agkn.hll.util;
 
 import net.agkn.hll.serialization.IWordSerializer;
 
+import java.io.Serializable;
+
 /**
  * A vector (array) of bits that is accessed in units ("registers") of <code>width</code>
  * bits which are stored as 64bit "words" (<code>long</code>s).  In this context
@@ -172,7 +174,7 @@ public class BitVector implements Cloneable {
     /**
      * Sets the value of the specified index register if and only if the specified
      * value is greater than the current value in the register.  This is equivalent
-     * to but much more performant than:<p/>
+     * to but much more performant than:
      *
      * <pre>vector.setRegister(index, Math.max(vector.getRegister(index), value));</pre>
      *
