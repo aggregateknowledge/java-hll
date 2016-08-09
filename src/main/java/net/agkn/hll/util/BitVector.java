@@ -27,7 +27,7 @@ import java.io.Serializable;
  *
  * @author rgrzywinski
  */
-public class BitVector implements Cloneable {
+public class BitVector implements Cloneable, Serializable {
     // NOTE:  in this context, a word is 64bits
 
     // rather than doing division to determine how a bit index fits into 64bit
