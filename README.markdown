@@ -59,7 +59,7 @@ Naturally, the cardinality estimates of the `EMPTY` and `EXPLICIT` representatio
 The Importance of Hashing
 =========================
 
-In brief, it is absolutely crucial to hash inputs to an HLL. A close approximation of uniform randomness in the inputs ensures that the error guarantees laid out in the original paper hold. We've empirically determined that [MurmurHash 3](http://guava-libraries.googlecode.com/git/guava/src/com/google/common/hash/Murmur3_128HashFunction.java), from Google's Guava, is an excellent and fast hash function to use in conjunction with `java-hll` module.
+In brief, it is absolutely crucial to hash inputs to an HLL. A close approximation of uniform randomness in the inputs ensures that the error guarantees laid out in the original paper hold. We've empirically determined that [MurmurHash 3](https://github.com/google/guava/blob/master/android/guava/src/com/google/common/hash/Murmur3_128HashFunction.java), from Google's Guava, is an excellent and fast hash function to use in conjunction with `java-hll` module.
 
 The seed to the hash call must remain constant for all inputs to a given HLL.  Similarly, if one plans to compute the union of two HLLs, the input values must have been hashed using the same seed.
 
